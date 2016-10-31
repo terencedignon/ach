@@ -2,6 +2,7 @@ require 'rubygems'
 require 'bundler/setup'
 Bundler.require
 require 'ach'
+require 'byebug'
 require 'date'
 
 Dir['./spec/support/fields/*.rb'].sort.each { |f| require f}

@@ -31,8 +31,8 @@ describe ACH::NextFederalReserveEffectiveDate do
     context 'when today is Monday and a holiday' do
       let(:run_date) { Date.new(2012, 5, 28) }
 
-      it 'returns the Wednesday after' do
-        expect(subject).to eq(Date.new(2012, 5, 30))
+      it 'returns the Tuesday after' do
+        expect(subject).to eq(Date.new(2012, 5, 29))
       end
     end
 
@@ -47,24 +47,24 @@ describe ACH::NextFederalReserveEffectiveDate do
     context 'when today is Saturday and Monday is not a holiday' do
       let(:run_date) { Date.new(2012, 11, 3) }
 
-      it 'returns the Tuesday after' do
-        expect(subject).to eq(Date.new(2012, 11, 6))
+      it 'returns the Monday after' do
+        expect(subject).to eq(Date.new(2012, 11, 5))
       end
     end
 
     context 'when today is Saturday and Monday is a Holiday' do
       let(:run_date) { Date.new(2012, 5, 26) }
 
-      it 'returns the Wednesday after' do
-        expect(subject).to eq(Date.new(2012, 5, 30))
+      it 'returns the Tuesday after' do
+        expect(subject).to eq(Date.new(2012, 5, 29))
       end
     end
 
     context 'when today is Thursday and a holiday' do
       let(:run_date) { Date.new(2012, 11, 22) }
 
-      it 'returns the Monday after' do
-        expect(subject).to eq(Date.new(2012, 11, 26))
+      it 'returns Friday' do
+        expect(subject).to eq(Date.new(2012, 11, 23))
       end
     end
   end

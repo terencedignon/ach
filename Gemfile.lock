@@ -14,6 +14,7 @@ GEM
       thor (>= 0.14.0)
     autotest (4.4.6)
       ZenTest (>= 4.4.1)
+    byebug (9.0.6)
     diff-lcs (1.2.5)
     holidays (5.0.0)
     rake (11.3.0)
@@ -39,6 +40,7 @@ DEPENDENCIES
   ach!
   appraisal
   autotest
+  byebug
   rake
   rspec (~> 3.2)
 

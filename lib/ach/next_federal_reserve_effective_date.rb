@@ -2,39 +2,32 @@ require 'holidays'
 
 module ACH
   class NextFederalReserveEffectiveDate
-    def initialize(submission_date)
-      @submission_date = submission_date
+    attr_accessor :query_date
+
+    def initialize(query_date)
+      @query_date = query_date
     end
 
     def result
-      @result = @submission_date
-      advance_to_next_business_day
-      advance_extra_day_if_submission_date_is_holiday_or_weekend
-      @result
+      @result ||= parse_result
     end
 
     private
 
-    def advance_extra_day_if_submission_date_is_holiday_or_weekend
-      if holiday_or_weekend?(@submission_date)
-        advance_to_next_business_day
-      end
+    def parse_result
+      date = query_date
+      begin
+        date = date.next_day
+      end while weekend?(date) || holiday?(date)
+      date
     end
 
-    def advance_to_next_business_day
-      @result = @result.next_day
-
-      while holiday_or_weekend?(@result)
-        @result = @result.next_day
-      end
+    def weekend?(date)
+      date.saturday? || date.sunday?
     end
 
     def holiday?(date)
       Holidays.on(date, :federal_reserve).any?
-    end
-
-    def holiday_or_weekend?(date)
-      date.saturday? || date.sunday? || holiday?(date)
     end
   end
 end
