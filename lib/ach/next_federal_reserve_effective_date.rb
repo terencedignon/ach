@@ -2,6 +2,12 @@ require 'holidays'
 
 module ACH
   class NextFederalReserveEffectiveDate
+    FEDERAL_RESERVE_SYMBOL =
+      if Gem.loaded_specs['holidays'].version < Gem::Version.new('7.0.0')
+        :federal_reserve
+      else
+        :federalreserve
+      end
     attr_accessor :query_date
 
     def initialize(query_date)
@@ -27,7 +33,7 @@ module ACH
     end
 
     def holiday?(date)
-      Holidays.on(date, :federal_reserve).any?
+      Holidays.on(date, FEDERAL_RESERVE_SYMBOL, :observed).any?
     end
   end
 end

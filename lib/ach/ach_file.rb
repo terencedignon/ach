@@ -14,7 +14,7 @@ module ACH
       @control = Records::FileControl.new
 
       if data
-        if (data.encode(Encoding.find('ASCII'),ENCODING_OPTIONS) =~ /\n|\r\n/).nil?
+        if (data.encode(Encoding.find('ASCII'), **ENCODING_OPTIONS) =~ /\n|\r\n/).nil?
           parse_fixed(data)
         else
           parse(data)
@@ -22,18 +22,26 @@ module ACH
       end
     end
 
-    def to_s
+
+    # @param eol [String] Line ending, default to CRLF
+    def to_s eol = "\r\n"
       records = []
       records << @header
-      @batches.each { |b| records += b.to_ach }
+
+      @batches.each_with_index do |batch, index|
+        batch.header.batch_number ||= index + 1
+        records += batch.to_ach
+      end
       records << @control
 
-      nines_needed = 10 - (records.length % 10)
+      records_count = records.map(&:records_count).reduce(:+)
+      nines_needed = (10 - records_count) % 10
       nines_needed = nines_needed % 10
       nines_needed.times { records << Records::Nines.new() }
 
+      records_count = records.map(&:records_count).reduce(:+)
       @control.batch_count = @batches.length
-      @control.block_count = (records.length / 10).ceil
+      @control.block_count = (records_count / 10).ceil
 
       @control.entry_count = 0
       @control.debit_total = 0
@@ -47,7 +55,7 @@ module ACH
         @control.entry_hash += batch.control.entry_hash
       end
 
-      records.collect { |r| r.to_ach }.join("\r\n") + "\r\n"
+      records.collect { |r| r.to_ach }.join(eol) + eol
     end
 
     def report
@@ -139,7 +147,7 @@ module ACH
         when '9'
           # skip
         else
-          raise "Didn't recognize type code #{type} for this line:\n#{line}"
+          raise UnrecognizedTypeCode, "Didn't recognize type code #{type} for this line:\n#{line}"
         end
       end
 
